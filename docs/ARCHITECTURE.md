@@ -80,17 +80,17 @@ Needs verification: exact cache path differs by Qt platform integration and envi
 Verified options:
 
 ```bash
-RevaPlayer --version
-RevaPlayer --help
-RevaPlayer --url <url>
-RevaPlayer <media-file> [more-media-files]
+revaplayer --version
+revaplayer --help
+revaplayer --url <url>
+revaplayer <media-file> [more-media-files]
 ```
 
 ## Desktop Integration
 
 Linux integration files are installed by CMake:
 
-- Binary: `${CMAKE_INSTALL_BINDIR}/RevaPlayer`, usually `/usr/bin/RevaPlayer`.
+- Binary: `${CMAKE_INSTALL_BINDIR}/revaplayer`, usually `/usr/bin/revaplayer`.
 - Desktop file: `${CMAKE_INSTALL_DATAROOTDIR}/applications/io.github.moayad30.revaplayer.desktop`.
 - AppStream metadata: `${CMAKE_INSTALL_DATAROOTDIR}/metainfo/io.github.moayad30.revaplayer.metainfo.xml`.
 - Icon: `${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/scalable/apps/revaplayer.svg`.

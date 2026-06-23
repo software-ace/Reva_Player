@@ -9,7 +9,7 @@ Verified against repository files on 2026-04-30. Items that require target machi
 - [ ] `cmake -S . -B build -DCMAKE_BUILD_TYPE=Release` succeeds.
 - [ ] `cmake --build build --parallel` succeeds.
 - [ ] `ctest --test-dir build --output-on-failure` succeeds.
-- [ ] `./build/RevaPlayer --version` prints the expected version.
+- [ ] `./build/revaplayer --version` prints the expected version.
 - [ ] Smoke launch succeeds with `REVAPLAYER_DB_PATH=/tmp/revaplayer-smoke.sqlite`.
 
 ## General Release Checklist
@@ -19,7 +19,7 @@ Verified against repository files on 2026-04-30. Items that require target machi
 - [ ] AppStream release version/date checked in `dist/linux/io.github.moayad30.revaplayer.metainfo.xml`.
 - [ ] Changelog or release notes updated if used by the release process.
 - [ ] App name is `Reva Player`.
-- [ ] Binary name is `RevaPlayer`.
+- [ ] Binary name is `revaplayer`.
 - [ ] Desktop ID is `io.github.moayad30.revaplayer`.
 - [ ] No unwanted old branding in user-facing docs or metadata.
 - [ ] Icons are present in `resources/icons/`.
@@ -127,11 +127,11 @@ Verified against repository files on 2026-04-30. Items that require target machi
 Use these when a build runs locally but fails on another machine:
 
 ```bash
-ldd build/RevaPlayer
-./build/RevaPlayer --version
-QT_QPA_PLATFORM=xcb ./build/RevaPlayer
-QT_QPA_PLATFORM=wayland ./build/RevaPlayer
-REVAPLAYER_DB_PATH=/tmp/revaplayer-smoke.sqlite ./build/RevaPlayer
+ldd build/revaplayer
+./build/revaplayer --version
+QT_QPA_PLATFORM=xcb ./build/revaplayer
+QT_QPA_PLATFORM=wayland ./build/revaplayer
+REVAPLAYER_DB_PATH=/tmp/revaplayer-smoke.sqlite ./build/revaplayer
 ```
 
 For package outputs, inspect content before publishing:

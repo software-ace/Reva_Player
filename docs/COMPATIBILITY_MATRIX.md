@@ -39,7 +39,7 @@ Verified against repository files on 2026-04-30.
 | Bundled DEB | Implemented script | Medium-High | Depends on prepared runtime bundle from AppImage payload. |
 | AppImage | Implemented script | High | Best current cross-distro test/release path. |
 | Bundled RPM | Implemented script | Medium | Needs clean install/upgrade/uninstall tests on RPM-family systems. |
-| Flatpak | Not available yet | Future | Needs manifest, portals, permissions, mpv/Qt runtime plan. |
+| Flatpak | Manifest available | High | Builds against org.kde.Platform 6.10; libmpv/ffmpeg/libass built from source in manifest. |
 
 ## Desktop Environments
 
@@ -54,7 +54,7 @@ Verified against repository files on 2026-04-30.
 ## Unsupported / Not Confirmed
 
 - Mobile platforms: not targeted.
-- Sandboxed Linux package: Flatpak is not implemented yet.
+- Sandboxed Linux package: Flatpak is supported via `dist/linux/flatpak/` manifest.
 - Automatic updates: not implemented by repository files.
 
 ## Practical Recommendation
@@ -65,4 +65,4 @@ Start compatibility testing with:
 2. AppImage smoke tests on Debian/Ubuntu/Fedora/openSUSE.
 3. DEB install/upgrade/uninstall tests on Debian/Ubuntu-family systems.
 4. Bundled RPM install/upgrade/uninstall tests on Fedora/openSUSE/RHEL-family systems before advertising it broadly.
-5. Flatpak tests after a manifest exists.
+5. Flatpak build/install test via `dist/linux/flatpak/build-flatpak.sh`.

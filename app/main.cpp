@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
         }
         if (std::strcmp(argv[index], "--help") == 0 || std::strcmp(argv[index], "-h") == 0) {
             std::printf(
-                "Usage: RevaPlayer [options] [media...]\n"
+                "Usage: revaplayer [options] [media...]\n"
                 "\n"
                 "Linux desktop media player built with Qt Widgets and libmpv.\n"
                 "\n"

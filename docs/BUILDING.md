@@ -45,15 +45,15 @@ cmake --build build --parallel
 Run:
 
 ```bash
-./build/RevaPlayer
-./build/RevaPlayer --version
-./build/RevaPlayer --help
+./build/revaplayer
+./build/revaplayer --version
+./build/revaplayer --help
 ```
 
 Use a disposable database for smoke tests:
 
 ```bash
-REVAPLAYER_DB_PATH=/tmp/revaplayer-smoke.sqlite ./build/RevaPlayer
+REVAPLAYER_DB_PATH=/tmp/revaplayer-smoke.sqlite ./build/revaplayer
 ```
 
 ## Release Build
@@ -163,7 +163,7 @@ scripts/repack-appimage-fallback.sh --source-appimage /path/to/old.AppImage
 | --- | --- | --- |
 | `find_package(mpv REQUIRED)` fails | libmpv development files missing | Check `libmpv-dev` or distro equivalent. |
 | Qt package not found | Qt dev package missing or wrong Qt major | Use `-DREVAPLAYER_QT_MAJOR=5` or install Qt 6 dev packages. |
-| App starts but video area fails | OpenGL/Qt platform/plugin issue | Try `QT_QPA_PLATFORM=xcb ./build/RevaPlayer` or `QT_QPA_PLATFORM=wayland ./build/RevaPlayer`. |
+| App starts but video area fails | OpenGL/Qt platform/plugin issue | Try `QT_QPA_PLATFORM=xcb ./build/revaplayer` or `QT_QPA_PLATFORM=wayland ./build/revaplayer`. |
 | SQLite driver missing | Qt SQL SQLite plugin not installed | Install Qt SQLite package for selected Qt major. |
 | AppImage build fails immediately | linuxdeploy/appimagetool missing | Provide tool paths or environment overrides. |
 
@@ -171,7 +171,7 @@ scripts/repack-appimage-fallback.sh --source-appimage /path/to/old.AppImage
 
 - Confirm `project(RevaPlayer VERSION ...)` is correct.
 - Run `ctest --test-dir <build-dir> --output-on-failure`.
-- Run `./<build-dir>/RevaPlayer --version`.
+- Run `./<build-dir>/revaplayer --version`.
 - Smoke-launch with a temporary database path.
 - Inspect desktop file and AppStream metadata.
 - For package builds, inspect package contents before install.

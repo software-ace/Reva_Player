@@ -9,7 +9,7 @@ Use this checklist for every release artifact.
 - [ ] AppStream release entry checked.
 - [ ] Changelog/release notes updated if used.
 - [ ] App name verified: `Reva Player`.
-- [ ] Binary name verified: `RevaPlayer`.
+- [ ] Binary name verified: `revaplayer`.
 - [ ] App ID verified: `io.github.moayad30.revaplayer`.
 - [ ] Branding verified.
 - [ ] No unwanted old names in user-facing files.

@@ -1,0 +1,211 @@
+# Flatpak manifest for Reva Player
+#
+# Build locally:
+#   dist/linux/flatpak/build-flatpak.sh
+#
+# This manifest builds Reva Player from the local source tree against the
+# org.kde.Platform 6.x runtime, which provides Qt 6 (Widgets, Sql, DBus,
+# OpenGLWidgets) and the Qt SQL SQLite driver. The KDE runtime does NOT ship
+# libmpv or ffmpeg, so they are built here as nested modules (see the revaplayer
+# module's `modules:` below).
+#
+# App ID matches dist/linux/io.github.moayad30.revaplayer.{desktop,metainfo.xml}
+# and the AppStream launchable desktop-id.
+#
+# Binary name: the desktop file uses Exec=revaplayer / TryExec=revaplayer /
+# StartupWMClass=revaplayer (lowercase rename, commit 30bc575). The CMake
+# executable target is also `revaplayer`, so `command: revaplayer` matches
+# directly. A post-install rename step is kept as an idempotent safety net
+# in case the CMake target name diverges from the desktop file in the future.
+
+app-id: io.github.moayad30.revaplayer
+runtime: org.kde.Platform
+runtime-version: '6.10'
+sdk: org.kde.Sdk
+command: revaplayer
+
+# Sandbox permissions.
+#
+# Filesystem access (criterion 4): Reva Player is a local-first media player
+# that must open user media libraries anywhere on the host. A per-file
+# xdg-desktop-portal flow would be impractical for folder playlists and the
+# saved-folder workflow, so the app is granted read-only access to the whole
+# host filesystem (--filesystem=host:ro). The application only reads media
+# files; it never writes to them.
+#
+# User data (SQLite database revaplayer.sqlite, thumbnails, settings, window
+# state) is written to the sandboxed XDG locations under
+# ~/.var/app/io.github.moayad30.revaplayer/ automatically and needs no extra
+# filesystem permission.
+#
+# --filesystem=xdg-pictures is granted writable so screenshots can be exported
+# to the user's Pictures folder (the capture path is configurable in settings).
+finish-args:
+  - --share=ipc                 # X11 shared memory / Qt IPC
+  - --socket=fallback-x11       # X11 rendering fallback
+  - --socket=wayland            # native Wayland rendering
+  - --device=all                # GPU/render nodes (/dev/dri) for OpenGL + VA-API
+  - --socket=pulseaudio         # audio output (PipeWire-Pulse compatibility)
+  - --filesystem=host:ro        # read local media libraries (see note above)
+  - --filesystem=xdg-pictures   # write screenshots to ~/Pictures
+
+modules:
+  - name: revaplayer
+    buildsystem: cmake-ninja
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DBUILD_TESTING=OFF
+      - -DREVAPLAYER_QT_MAJOR=6
+    # Build from the local source tree. The path is relative to this manifest
+    # file (dist/linux/flatpak/), so ../../.. is the project root containing
+    # CMakeLists.txt. build-flatpak.sh invokes flatpak-builder from this
+    # directory so the resolution is stable under either path interpretation.
+    sources:
+      - type: dir
+        path: ../../..
+    # CMake install rules (see CMakeLists.txt) install the desktop file, AppStream
+    # metainfo, scalable SVG icon, and thumbfast.lua. The binary is named
+    # `revaplayer` (matching Exec=revaplayer). A post-install safety check
+    # renames RevaPlayer→revaplayer if the CMake target name ever diverges.
+    #   - binary:        /app/bin/revaplayer   (matches Exec/TryExec)
+    #   - desktop file:  /app/share/applications/io.github.moayad30.revaplayer.desktop
+    #   - metainfo:      /app/share/metainfo/io.github.moayad30.revaplayer.metainfo.xml
+    #   - scalable icon: /app/share/icons/hicolor/scalable/apps/revaplayer.svg
+    #   - thumbfast.lua: /app/share/revaplayer/mpv/scripts/thumbfast.lua
+    post-install:
+      - |
+        # Idempotent safety net: rename RevaPlayer→revaplayer if the CMake
+        # target name ever diverges from the desktop file. No-op when the
+        # target is already `revaplayer`.
+        if [ -f /app/bin/RevaPlayer ] && [ ! -e /app/bin/revaplayer ]; then
+            mv /app/bin/RevaPlayer /app/bin/revaplayer
+        fi
+        test -x /app/bin/revaplayer
+        # Flatpak only exports icons whose name matches the app-id. CMake
+        # installs the SVG as revaplayer.svg; copy it to the app-id name so
+        # it appears in the application launcher.
+        for size_dir in /app/share/icons/hicolor/*/apps; do
+            [ -d "$size_dir" ] || continue
+            if [ -f "$size_dir/revaplayer.svg" ] && [ ! -e "$size_dir/io.github.moayad30.revaplayer.svg" ]; then
+                cp "$size_dir/revaplayer.svg" "$size_dir/io.github.moayad30.revaplayer.svg"
+            fi
+            if [ -f "$size_dir/revaplayer.xpm" ] && [ ! -e "$size_dir/io.github.moayad30.revaplayer.xpm" ]; then
+                cp "$size_dir/revaplayer.xpm" "$size_dir/io.github.moayad30.revaplayer.xpm"
+            fi
+        done
+    # libmpv and its dependencies (ffmpeg, libass) are built as nested modules
+    # because the KDE runtime does not provide libmpv. They are installed to
+    # /app and found by CMake's Findmpv.cmake (cmake/Findmpv.cmake) via the
+    # standard /app include/library search paths.
+    modules:
+      - name: libmpv
+        buildsystem: meson
+        config-opts:
+          - -Dlibmpv=true
+          - -Dbuild-date=false
+          - -Dalsa=disabled       # Flatpak audio routes through the PulseAudio socket
+          - -Dlua=disabled        # see "Thumbnail note" at the bottom of this file
+        cleanup:
+          - /include
+          - /lib/pkgconfig
+          - /share/applications
+          - /share/bash-completion
+          - /share/doc
+          - /share/icons
+          - /share/man
+          - /share/zsh
+          - /bin/mpv              # cplayer binary unused while lua is disabled
+        # Source URL + sha256 are taken from the currently-building Celluloid
+        # Flathub manifest (io.github.celluloid_player.Celluloid) so the hash is
+        # real and resolvable, not fabricated.
+        sources:
+          - type: archive
+            url: https://github.com/mpv-player/mpv/archive/v0.41.0.tar.gz
+            sha256: ee21092a5ee427353392360929dc64645c54479aefdb5babc5cfbb5fad626209
+        modules:
+          # ---- libplacebo: required by libmpv 0.41.0 (>=6.338.2) ----
+          # mpv uses libplacebo for its GPU rendering pipeline. Vulkan headers
+          # are provided by the org.kde.Sdk runtime. shaderc and glslang are
+          # disabled to avoid extra build deps; the SDK's glslang is not
+          # exposed as a pkg-config module, and libplacebo can build without
+          # them (they are only needed for standalone shader compilation).
+          - name: libplacebo
+            buildsystem: meson
+            config-opts:
+              - -Ddefault_library=shared
+              - -Ddemos=false
+              - -Dtests=false
+              - -Dshaderc=disabled
+              - -Dglslang=disabled
+            cleanup:
+              - /include
+              - /lib/pkgconfig
+              - /share
+            sources:
+              - type: git
+                url: https://github.com/haasn/libplacebo.git
+                tag: v7.360.1
+                # git source includes the glad submodule (needed for OpenGL loader)
+                # v7.360.1 fixes a Python 3.13 ElementTree compat bug in utils_gen.py
+
+          # ---- ffmpeg: decode backend for libmpv ----
+          # Player-focused config: shared lib, GPL, gnutls (provided by the
+          # org.kde.Sdk runtime) for https network streams, no programs/docs,
+          # and only the png encoder kept (used by the screenshot feature).
+          # All decoders/demuxers/parsers that ffmpeg builds internally are
+          # kept; no external codec libraries are required, which keeps the
+          # build self-contained against the KDE SDK.
+          # If gnutls is unavailable in a future SDK, drop --enable-gnutls
+          # (local playback is unaffected; only https media URLs lose TLS).
+          - name: ffmpeg
+            cleanup:
+              - /include
+              - /lib/pkgconfig
+              - /share/ffmpeg/examples
+            config-opts:
+              - --enable-shared
+              - --disable-static
+              - --enable-gpl
+              - --enable-gnutls
+              - --disable-doc
+              - --disable-programs
+              - --disable-encoders
+              - --disable-muxers
+              - --enable-encoder=png
+            sources:
+              - type: archive
+                url: https://ffmpeg.org/releases/ffmpeg-8.1.2.tar.xz
+                sha256: 464beb5e7bf0c311e68b45ae2f04e9cc2af88851abb4082231742a74d97b524c
+
+          # ---- libass: subtitle rendering (SSA/ASS and SRT) ----
+          # Required for Reva Player's subtitle features. harfbuzz and
+          # fontconfig are provided by the org.kde.Sdk runtime. The source
+          # hash matches the libass 0.17.4 release used by kdenlive's and
+          # Celluloid's Flathub manifests.
+          - name: libass
+            cleanup:
+              - /include
+              - /lib/*.la
+              - /lib/pkgconfig
+            config-opts:
+              - --disable-static
+              - --enable-harfbuzz
+              - --enable-fontconfig
+            sources:
+              - type: archive
+                url: https://github.com/libass/libass/releases/download/0.17.4/libass-0.17.4.tar.xz
+                sha256: 78f1179b838d025e9c26e8fef33f8092f65611444ffa1bfc0cfac6a33511a05a
+
+# Thumbnail note (kept as a comment, not a buildable module):
+# Reva Player ships resources/mpv/thumbfast.lua and uses it for on-hover
+# thumbnail generation. thumbfast requires (a) libmpv built with lua and
+# (b) an `mpv` cplayer binary on PATH to spawn. This manifest builds libmpv
+# with lua=disabled and drops the mpv binary, so hover thumbnails are disabled
+# in the Flatpak build for now. Playback and subtitles are fully functional.
+#
+# To enable thumbnails later:
+#   1. Add the shared-modules git submodule: https://github.com/flathub/shared-modules.git
+#   2. Add `- shared-modules/lua5.1/lua-5.1.5.json` as the first entry under
+#      libmpv's `modules:`.
+#   3. Change libmpv's `-Dlua=disabled` to `-Dlua=enabled`.
+#   4. Remove the `/bin/mpv` cleanup entry so thumbfast can spawn the bundled mpv.

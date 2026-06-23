@@ -109,6 +109,13 @@ sudo dnf install ./reva-player-*.rpm
 RevaPlayer
 ```
 
+### Flatpak
+
+```bash
+dist/linux/flatpak/build-flatpak.sh
+flatpak run io.github.moayad30.revaplayer
+```
+
 For package-specific notes, see [docs/packaging/README.md](docs/packaging/README.md).
 
 ## 💡 Why Reva Player
@@ -206,7 +213,7 @@ Reva Player is focused exclusively on Linux desktop systems.
 | AppImage | ✅ Available |
 | DEB | ✅ Available |
 | RPM | ✅ Available |
-| Flatpak | 🚧 Not available yet |
+| Flatpak | ✅ Available |
 
 Compatibility still depends on the target distribution, desktop environment,
 GPU/OpenGL stack, audio stack, codecs, Qt plugins, and bundled or system libmpv
@@ -225,7 +232,7 @@ Basic development build:
 ```bash
 cmake -S . -B build
 cmake --build build --parallel
-./build/RevaPlayer
+./build/revaplayer
 ```
 
 Main build requirements include CMake, a C++20 compiler, Qt Widgets, Qt Sql,
@@ -258,8 +265,7 @@ For storage paths and cleanup notes, see
 ## 🚧 Project Status
 
 Reva Player is focused on Linux desktop use and currently provides source code
-and release packaging paths for AppImage, DEB, and RPM-family packages.
-Flatpak support is not available yet.
+and release packaging paths for AppImage, DEB, RPM, and Flatpak.
 
 The project is still shaped by real Linux packaging and runtime testing. Codec
 support, subtitle behavior, GPU/OpenGL rendering, and desktop integration can

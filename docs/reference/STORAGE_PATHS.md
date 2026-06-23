@@ -17,7 +17,7 @@ The database is created by `infrastructure/storage/SqliteStore.cpp`.
 Override:
 
 ```bash
-REVAPLAYER_DB_PATH=/custom/path/revaplayer.sqlite RevaPlayer
+REVAPLAYER_DB_PATH=/custom/path/revaplayer.sqlite revaplayer
 ```
 
 Legacy compatibility: the application still contains an older database-path environment fallback. Use `REVAPLAYER_DB_PATH` for all new scripts and documentation.

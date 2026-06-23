@@ -32,7 +32,7 @@ CMake install rules currently install:
 
 | File | Destination |
 | --- | --- |
-| `RevaPlayer` | `${CMAKE_INSTALL_BINDIR}` usually `/usr/bin` |
+| `revaplayer` | `${CMAKE_INSTALL_BINDIR}` usually `/usr/bin` |
 | Desktop file | `${CMAKE_INSTALL_DATAROOTDIR}/applications` |
 | AppStream metadata | `${CMAKE_INSTALL_DATAROOTDIR}/metainfo` |
 | SVG icon | `${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/scalable/apps` |

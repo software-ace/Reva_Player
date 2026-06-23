@@ -4,7 +4,7 @@ This guide describes user-facing behavior verified from repository structure and
 
 ## Quick Start
 
-- Open media files from the UI or pass file paths to `RevaPlayer`.
+- Open media files from the UI or pass file paths to `revaplayer`.
 - Open media URLs with the `--url` command-line option or the UI action when available.
 - Use playback controls for play/pause, seek, volume, mute, speed, repeat, and playlist navigation.
 - Open Preferences/Settings to configure playback, subtitles, playlist behavior, mouse behavior, appearance, and shortcuts.
@@ -77,7 +77,7 @@ Screenshot file names are generated from a timestamp plus a sanitized media labe
 Settings are stored in SQLite, not in a plain text config file. To test without touching your normal profile:
 
 ```bash
-REVAPLAYER_DB_PATH=/tmp/revaplayer-test.sqlite RevaPlayer
+REVAPLAYER_DB_PATH=/tmp/revaplayer-test.sqlite revaplayer
 ```
 
 For cleanup behavior, see [reference/PURGE_LOCAL_DATA.md](reference/PURGE_LOCAL_DATA.md).

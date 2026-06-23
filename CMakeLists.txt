@@ -38,20 +38,19 @@ else()
 endif()
 find_package(mpv REQUIRED)
 
-add_executable(RevaPlayer
-    app/main.cpp
-    app/AppBootstrap.cpp
-    app/AppBootstrap.hpp
-    application/HistoryController.cpp
-    application/HistoryController.hpp
+# Shared core: compiled once, linked into both the application and the test
+# executable. Using an OBJECT library guarantees the code under test is byte-for
+# byte identical to the shipped code, and directly contributes its object files
+# (including the Qt resource registration initializer) to every consumer.
+add_library(revaplayer_core OBJECT
     application/BookmarkController.cpp
     application/BookmarkController.hpp
+    application/HistoryController.cpp
+    application/HistoryController.hpp
     application/PlaybackDiagnosticsFormatter.cpp
     application/PlaybackDiagnosticsFormatter.hpp
     application/PlaybackTuning.cpp
     application/PlaybackTuning.hpp
-    application/PlaybackController.cpp
-    application/PlaybackController.hpp
     application/PlaylistController.cpp
     application/PlaylistController.hpp
     application/SettingsController.cpp
@@ -62,16 +61,55 @@ add_executable(RevaPlayer
     application/ThemeStyle.hpp
     application/UiLanguage.cpp
     application/UiLanguage.hpp
-    application/SnapshotController.cpp
-    application/SnapshotController.hpp
     application/SnapshotPath.cpp
     application/SnapshotPath.hpp
     domain/Bookmark.hpp
-    domain/ChapterInfo.hpp
     domain/MediaItem.hpp
     domain/PlaybackEndReason.hpp
     domain/PlaybackDiagnostics.hpp
     domain/PlayerProfile.hpp
+    infrastructure/storage/SqliteStore.cpp
+    infrastructure/storage/SqliteStore.hpp
+    platform/DesktopIntegration.cpp
+    platform/DesktopIntegration.hpp
+    services/media/ThumbnailService.cpp
+    services/media/ThumbnailService.hpp
+    services/media/ThumbnailPolicy.cpp
+    services/media/ThumbnailPolicy.hpp
+    ui/ControlBar.cpp
+    ui/ControlBar.hpp
+    ui/FileDialogUtils.cpp
+    ui/FileDialogUtils.hpp
+    ui/FirstRunDialog.cpp
+    ui/FirstRunDialog.hpp
+    ui/SettingsDialog.cpp
+    ui/SettingsDialog.hpp
+    ui/ShortcutBinding.hpp
+    resources/resources.qrc
+)
+
+target_include_directories(revaplayer_core
+    PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}"
+)
+
+target_link_libraries(revaplayer_core
+    PUBLIC
+        Qt${QT_VERSION_MAJOR}::Widgets
+        Qt${QT_VERSION_MAJOR}::Sql
+)
+
+revaplayer_set_project_warnings(revaplayer_core)
+
+add_executable(RevaPlayer
+    app/main.cpp
+    app/AppBootstrap.cpp
+    app/AppBootstrap.hpp
+    application/PlaybackController.cpp
+    application/PlaybackController.hpp
+    application/SnapshotController.cpp
+    application/SnapshotController.hpp
+    domain/ChapterInfo.hpp
     domain/TrackInfo.hpp
     infrastructure/mpv/MpvCore.cpp
     infrastructure/mpv/MpvCore.hpp
@@ -81,38 +119,20 @@ add_executable(RevaPlayer
     infrastructure/mpv/MpvPropertyCache.hpp
     infrastructure/mpv/MpvRenderHost.cpp
     infrastructure/mpv/MpvRenderHost.hpp
-    infrastructure/storage/SqliteStore.cpp
-    infrastructure/storage/SqliteStore.hpp
-    platform/DesktopIntegration.cpp
-    platform/DesktopIntegration.hpp
-    services/media/ThumbnailService.cpp
-    services/media/ThumbnailService.hpp
     services/media/MetadataScanService.cpp
     services/media/MetadataScanService.hpp
-    services/media/ThumbnailPolicy.cpp
-    services/media/ThumbnailPolicy.hpp
-    ui/ControlBar.cpp
-    ui/ControlBar.hpp
     ui/BookmarkDialog.cpp
     ui/BookmarkDialog.hpp
-    ui/FileDialogUtils.cpp
-    ui/FileDialogUtils.hpp
-    ui/FirstRunDialog.cpp
-    ui/FirstRunDialog.hpp
     ui/HoverPreviewPopup.cpp
     ui/HoverPreviewPopup.hpp
     ui/MainWindow.cpp
     ui/MainWindow.hpp
     ui/MediaInfoDialog.cpp
     ui/MediaInfoDialog.hpp
-    ui/ShortcutBinding.hpp
-    ui/SettingsDialog.cpp
-    ui/SettingsDialog.hpp
     ui/MediaInformationOverlay.cpp
     ui/MediaInformationOverlay.hpp
     ui/VideoViewport.cpp
     ui/VideoViewport.hpp
-    resources/resources.qrc
 )
 
 target_include_directories(RevaPlayer
@@ -122,6 +142,7 @@ target_include_directories(RevaPlayer
 
 target_link_libraries(RevaPlayer
     PRIVATE
+        revaplayer_core
         Qt${QT_VERSION_MAJOR}::Widgets
         Qt${QT_VERSION_MAJOR}::Sql
         Qt${QT_VERSION_MAJOR}::DBus
@@ -145,49 +166,6 @@ if (BUILD_TESTING)
 
     add_executable(RevaPlayer_tests
         tests/CoreTests.cpp
-        application/BookmarkController.cpp
-        application/BookmarkController.hpp
-        application/PlaybackDiagnosticsFormatter.cpp
-        application/PlaybackDiagnosticsFormatter.hpp
-        application/HistoryController.cpp
-        application/HistoryController.hpp
-        application/PlaybackTuning.cpp
-        application/PlaybackTuning.hpp
-        application/PlaylistController.cpp
-        application/PlaylistController.hpp
-        application/SettingsController.cpp
-        application/SettingsController.hpp
-        application/SubtitleStyleOptions.cpp
-        application/SubtitleStyleOptions.hpp
-        application/ThemeStyle.cpp
-        application/ThemeStyle.hpp
-        application/UiLanguage.cpp
-        application/UiLanguage.hpp
-        application/SnapshotPath.cpp
-        application/SnapshotPath.hpp
-        domain/Bookmark.hpp
-        domain/MediaItem.hpp
-        domain/PlaybackEndReason.hpp
-        domain/PlaybackDiagnostics.hpp
-        domain/PlayerProfile.hpp
-        infrastructure/storage/SqliteStore.cpp
-        infrastructure/storage/SqliteStore.hpp
-        platform/DesktopIntegration.cpp
-        platform/DesktopIntegration.hpp
-        services/media/ThumbnailService.cpp
-        services/media/ThumbnailService.hpp
-        services/media/ThumbnailPolicy.cpp
-        services/media/ThumbnailPolicy.hpp
-        ui/ControlBar.cpp
-        ui/ControlBar.hpp
-        ui/FileDialogUtils.cpp
-        ui/FileDialogUtils.hpp
-        ui/FirstRunDialog.cpp
-        ui/FirstRunDialog.hpp
-        ui/SettingsDialog.cpp
-        ui/SettingsDialog.hpp
-        ui/ShortcutBinding.hpp
-        resources/resources.qrc
         )
 
     target_include_directories(RevaPlayer_tests
@@ -197,6 +175,7 @@ if (BUILD_TESTING)
 
     target_link_libraries(RevaPlayer_tests
         PRIVATE
+            revaplayer_core
             Qt${QT_VERSION_MAJOR}::Test
             Qt${QT_VERSION_MAJOR}::Widgets
             Qt${QT_VERSION_MAJOR}::Sql

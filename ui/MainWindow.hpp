@@ -7,6 +7,7 @@
 #include "domain/PlaybackDiagnostics.hpp"
 #include "domain/PlayerProfile.hpp"
 #include "domain/TrackInfo.hpp"
+#include "infrastructure/storage/SqliteStore.hpp"
 #include "services/media/MetadataScanService.hpp"
 #include "ui/ShortcutBinding.hpp"
 
@@ -73,7 +74,6 @@ class MpvRenderHost;
 
 namespace revaplayer::infrastructure::storage {
 struct PlaybackHistoryRecord;
-struct ResumeStateRecord;
 }
 
 namespace revaplayer::services::media {

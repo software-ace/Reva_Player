@@ -1,17 +1,17 @@
 # Running the Local Binary
 
-`build/RevaPlayer` is a locally linked binary. It is not a portable application by itself unless packaged with its runtime dependencies.
+`build/revaplayer` is a locally linked binary. It is not a portable application by itself unless packaged with its runtime dependencies.
 
 Verified against repository files on 2026-04-25.
 
 ## Basic Commands
 
 ```bash
-./build/RevaPlayer
-./build/RevaPlayer --version
-./build/RevaPlayer --help
-./build/RevaPlayer --url <media-url>
-./build/RevaPlayer /path/to/video.mp4
+./build/revaplayer
+./build/revaplayer --version
+./build/revaplayer --help
+./build/revaplayer --url <media-url>
+./build/revaplayer /path/to/video.mp4
 ```
 
 Version output is currently:
@@ -42,7 +42,7 @@ QStandardPaths::AppDataLocation/revaplayer.sqlite
 Use a temporary database for testing:
 
 ```bash
-REVAPLAYER_DB_PATH=/tmp/revaplayer-smoke.sqlite ./build/RevaPlayer
+REVAPLAYER_DB_PATH=/tmp/revaplayer-smoke.sqlite ./build/revaplayer
 ```
 
 Legacy compatibility:
@@ -55,9 +55,9 @@ Legacy compatibility:
 Useful diagnostics:
 
 ```bash
-QT_QPA_PLATFORM=xcb ./build/RevaPlayer
-QT_QPA_PLATFORM=wayland ./build/RevaPlayer
-QT_QPA_PLATFORM=minimal REVAPLAYER_DB_PATH=/tmp/revaplayer-minimal.sqlite timeout 8s ./build/RevaPlayer
+QT_QPA_PLATFORM=xcb ./build/revaplayer
+QT_QPA_PLATFORM=wayland ./build/revaplayer
+QT_QPA_PLATFORM=minimal REVAPLAYER_DB_PATH=/tmp/revaplayer-minimal.sqlite timeout 8s ./build/revaplayer
 ```
 
 The `minimal` launch is useful only as a smoke test. It does not verify real playback, file dialogs, GPU rendering, or desktop integration.
@@ -74,7 +74,7 @@ The `minimal` launch is useful only as a smoke test. It does not verify real pla
 
 ## When Not To Copy the Binary Alone
 
-Do not distribute only `build/RevaPlayer` to users unless they have matching Qt, libmpv, platform plugins, and SQL plugins installed. Prefer:
+Do not distribute only `build/revaplayer` to users unless they have matching Qt, libmpv, platform plugins, and SQL plugins installed. Prefer:
 
 - AppImage for quick cross-distro testing.
 - DEB for Debian/Ubuntu-family systems.

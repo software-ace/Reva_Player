@@ -36,7 +36,7 @@ a release path until a manifest exists.
 ## Repository-Verified Facts
 
 - App display name: `Reva Player`.
-- Executable target: `RevaPlayer`.
+- Executable target: `revaplayer`.
 - App ID / desktop ID stem: `io.github.moayad30.revaplayer`.
 - Current project version in CMake: `1.0.0`.
 - UI framework: Qt Widgets, with Qt 6 default and Qt 5 selectable through `REVAPLAYER_QT_MAJOR`.
